@@ -1,13 +1,21 @@
 package com.drz.place.config;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClient;
+import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.drz.place.persistence.sender.PlaceSender;
 import com.drz.place.persistence.sender.PlaceSenderRabbitMQImpl;
+import com.drz.place.persistence.sender.PlaceSenderSNSImpl;
 import lombok.Data;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.aws.messaging.core.NotificationMessagingTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,6 +31,12 @@ public class PlaceSenderConfig {
     private String topicName;
 
     private String topicDeleteName;
+
+    @Value("${cloud.aws.credentials.accessKey}")
+    private String awsCredentialKey;
+
+    @Value("${cloud.aws.credentials.secretKey}")
+    private String awsCredentialSecret;
 
     @Bean
     Queue queue() {
@@ -51,9 +65,50 @@ public class PlaceSenderConfig {
 
         return rabbitTemplate;
     }
+//
+//    @Bean
+//    PlaceSender placeSender(RabbitTemplate rabbitTemplate) {
+//        return new PlaceSenderRabbitMQImpl(rabbitTemplate, topicExchangeName, topicName, topicDeleteName);
+//    }
+
+//    @Bean
+//    public AWSCredentialsProvider credentialsProvider() {
+//        return new AWSCredentialsProvider() {
+//            @Override
+//            public AWSCredentials getCredentials() {
+//                return new AWSCredentials() {
+//                    @Override
+//                    public String getAWSAccessKeyId() {
+//                        return awsCredentialKey;
+//                    }
+//
+//                    @Override
+//                    public String getAWSSecretKey() {
+//                        return awsCredentialSecret;
+//                    }
+//                };
+//            }
+//
+//            @Override
+//            public void refresh() {
+//
+//            }
+//        };
+//    }
+//
+//    @Bean
+//    public AmazonSNS amazonSNS(AWSCredentialsProvider credentialsProvider) {
+//        return AmazonSNSClientBuilder.standard().withCredentials(credentialsProvider).build();
+//    }
 
     @Bean
-    PlaceSender placeSender(RabbitTemplate rabbitTemplate) {
-        return new PlaceSenderRabbitMQImpl(rabbitTemplate, topicExchangeName, topicName, topicDeleteName);
+    public NotificationMessagingTemplate notificationMessagingTemplate(
+            AmazonSNS amazonSNS) {
+        return new NotificationMessagingTemplate(amazonSNS);
+    }
+
+    @Bean
+    PlaceSender placeSender(NotificationMessagingTemplate messagingTemplate) {
+        return new PlaceSenderSNSImpl(messagingTemplate, "place", topicName, topicDeleteName);
     }
 }

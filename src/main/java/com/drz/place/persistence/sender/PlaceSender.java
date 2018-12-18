@@ -7,4 +7,5 @@ public interface PlaceSender {
     public void sendSave(PlaceDTO placeDTO);
 
     public void sendDelete(PlaceDTO placeDTO);
+
 }
