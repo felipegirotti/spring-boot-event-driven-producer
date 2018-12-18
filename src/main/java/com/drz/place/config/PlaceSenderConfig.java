@@ -1,6 +1,7 @@
 package com.drz.place.config;
 
 import com.drz.place.persistence.sender.PlaceSender;
+import com.drz.place.persistence.sender.PlaceSenderRabbitMQImpl;
 import lombok.Data;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -53,6 +54,6 @@ public class PlaceSenderConfig {
 
     @Bean
     PlaceSender placeSender(RabbitTemplate rabbitTemplate) {
-        return new PlaceSender(rabbitTemplate, topicExchangeName, topicName, topicDeleteName);
+        return new PlaceSenderRabbitMQImpl(rabbitTemplate, topicExchangeName, topicName, topicDeleteName);
     }
 }
