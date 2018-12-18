@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+
+  app:
+    build: .
+    container_name: place-java-example
+    image: felipegirotti/place-java-example
+    depends_on:
+      - mysql
+      - rabbitmq
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+
+  mysql:
+    container_name: place-mysql
+    image: mysql:5.7
+    restart: always
+    volumes:
+    - ./docker/mysql/data:/var/lib/mysql:cached
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: place
+    ports:
+    - "3306:3306"
+
+  rabbitmq:
+    container_name: place-rabbitmq
+    image: "rabbitmq:3-management"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: "/"
+    ports:
+    - "${RABBITMQ_ADMIN_PORT}:15672"
+    - "5672:5672"
+
+
+
