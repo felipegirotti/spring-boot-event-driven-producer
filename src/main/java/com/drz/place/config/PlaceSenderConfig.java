@@ -71,36 +71,6 @@ public class PlaceSenderConfig {
 //        return new PlaceSenderRabbitMQImpl(rabbitTemplate, topicExchangeName, topicName, topicDeleteName);
 //    }
 
-//    @Bean
-//    public AWSCredentialsProvider credentialsProvider() {
-//        return new AWSCredentialsProvider() {
-//            @Override
-//            public AWSCredentials getCredentials() {
-//                return new AWSCredentials() {
-//                    @Override
-//                    public String getAWSAccessKeyId() {
-//                        return awsCredentialKey;
-//                    }
-//
-//                    @Override
-//                    public String getAWSSecretKey() {
-//                        return awsCredentialSecret;
-//                    }
-//                };
-//            }
-//
-//            @Override
-//            public void refresh() {
-//
-//            }
-//        };
-//    }
-//
-//    @Bean
-//    public AmazonSNS amazonSNS(AWSCredentialsProvider credentialsProvider) {
-//        return AmazonSNSClientBuilder.standard().withCredentials(credentialsProvider).build();
-//    }
-
     @Bean
     public NotificationMessagingTemplate notificationMessagingTemplate(
             AmazonSNS amazonSNS) {
@@ -109,6 +79,6 @@ public class PlaceSenderConfig {
 
     @Bean
     PlaceSender placeSender(NotificationMessagingTemplate messagingTemplate) {
-        return new PlaceSenderSNSImpl(messagingTemplate, "place", topicName, topicDeleteName);
+        return new PlaceSenderSNSImpl(messagingTemplate, topicExchangeName, topicName, topicDeleteName);
     }
 }
