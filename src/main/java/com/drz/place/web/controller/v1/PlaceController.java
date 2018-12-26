@@ -1,6 +1,7 @@
 package com.drz.place.web.controller.v1;
 
 import com.drz.place.business.PlaceService;
+import com.drz.place.dto.place.ErrorResponse;
 import com.drz.place.dto.place.PlaceDTO;
 import com.drz.place.persistence.entity.PlaceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +44,12 @@ public class PlaceController {
     public ResponseEntity delete(@PathVariable Long id) throws PlaceNotFoundException {
         placeService.delete(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @RequestMapping(produces = "application/json")
+    @ExceptionHandler(PlaceNotFoundException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public ErrorResponse handleException(PlaceNotFoundException ex) {
+        return new ErrorResponse(ex.getMessage(), ex.getCode());
     }
 }
