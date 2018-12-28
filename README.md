@@ -1,8 +1,10 @@
-# PLACES MICROSERVICE - Event Driven with SpringBoot and RabbitMQ or SNS
+# PLACES MICROSERVICE - Event Driven with SpringBoot and RabbitMQ or SNS Producer
 
 This is a simple example of microservice, we are using the event driven architecture. 
 
 The master branch uses RabbitMQ, the branch `sns-1` we change the broker to sns instead rabbitmq.
+
+For more details of consumer see the example here: [https://github.com/felipegirotti/spring-boot-event-driven-consumer](https://github.com/felipegirotti/spring-boot-event-driven-consumer)
 
 ## API
 We expose a simple CRUD HTTP API.   
